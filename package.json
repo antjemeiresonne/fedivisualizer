@@ -1,0 +1,16 @@
+{
+  "name": "project_website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:client": "pnpm --filter client run dev",
+    "dev:server": "pnpm --filter server run dev",
+    "build": "pnpm --filter client run build",
+    "test": "pnpm --filter client run test:unit",
+    "lint": "pnpm --filter client run lint"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}
