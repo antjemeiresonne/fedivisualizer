@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { onMounted, onUnmounted } from 'vue'
+import WebmentionStars from '@/components/atoms/WebmentionStars.vue'
+import { useWebmentions } from '@/composables/useWebmentions'
 
 const router = useRouter()
+const { approvedMentions, init, disconnectSSE } = useWebmentions()
 
 const navigateToDetails = () => {
   router.push('/details')
@@ -10,11 +14,21 @@ const navigateToDetails = () => {
 const navigateToVisualization = () => {
   router.push('/visualization')
 }
+
+onMounted(() => {
+  init()
+})
+
+onUnmounted(() => {
+  disconnectSSE()
+})
 </script>
 
 <template>
   <div class="home">
-    <div class="video-background"></div>
+    <div class="video-background">
+      <WebmentionStars :mentions="approvedMentions" />
+    </div>
 
     <div class="content">
       <h1 class="title">Fedivisualizer</h1>
@@ -53,7 +67,7 @@ const navigateToVisualization = () => {
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -61,6 +75,7 @@ const navigateToVisualization = () => {
   height: 100%;
   text-align: center;
   padding: 2rem;
+  pointer-events: none;
 }
 
 .title {
@@ -70,6 +85,7 @@ const navigateToVisualization = () => {
   margin-bottom: 1rem;
   text-shadow: 0 0 30px rgba(100, 150, 255, 0.3);
   animation: fadeInUp 1s ease-out;
+  pointer-events: auto;
 }
 
 .subtitle {
@@ -78,6 +94,7 @@ const navigateToVisualization = () => {
   margin-bottom: 3rem;
   max-width: 600px;
   animation: fadeInUp 1s ease-out 0.2s both;
+  pointer-events: auto;
 }
 
 .buttons {
@@ -86,6 +103,7 @@ const navigateToVisualization = () => {
   flex-wrap: wrap;
   justify-content: center;
   animation: fadeInUp 1s ease-out 0.4s both;
+  pointer-events: auto;
 }
 
 .learn-more-btn,

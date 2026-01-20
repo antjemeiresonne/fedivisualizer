@@ -53,6 +53,26 @@ export interface Comet {
   sparkVelocities: Float32Array
 }
 
+export interface InfluencerPlanet {
+  mesh: THREE.Mesh
+  glow: THREE.Mesh
+  label?: THREE.Sprite
+  author: string
+  avatar: string
+  influence: number
+  position: THREE.Vector3
+  orbiters: OrbitingUser[]
+}
+
+export interface OrbitingUser {
+  mesh: THREE.Mesh
+  author: string
+  orbitRadius: number
+  orbitSpeed: number
+  orbitAngle: number
+  parentInfluencer: string
+}
+
 export const SPAWN_RADIUS_MIN = 60
 export const SPAWN_RADIUS_MAX = 120
 export const PLANET_LIFETIME_MIN = 20000

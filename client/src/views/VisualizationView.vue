@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import VisualizationOverlay from '@/components/organisms/VisualizationOverlay.vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import VisualizationOverlay, { type VisualizationMode } from '@/components/organisms/VisualizationOverlay.vue'
 import FullscreenHint from '@/components/atoms/FullscreenHint.vue'
 import { useThreeScene, usePlanets, useComets, useSounds, type PostData } from '@/composables/visualization'
+import { useInfluenceOrbits } from '@/composables/visualization/useInfluenceOrbits'
+import { useInfluenceVisualization } from '@/composables/visualization/useInfluenceVisualization'
 
 const containerRef = ref<HTMLDivElement>()
 const visualizationRef = ref<HTMLDivElement>()
 const isFullscreen = ref(false)
+const visualizationMode = ref<VisualizationMode>('both')
 
 let animationId: number
 let eventSource: EventSource | null = null
+let influenceInterval: ReturnType<typeof setInterval> | null = null
 
-// Initialize composables
 const threeScene = useThreeScene(containerRef)
 const sounds = useSounds()
+const { influencers, fetchInfluencers } = useInfluenceOrbits()
+
 let planetsManager: ReturnType<typeof usePlanets>
 let cometsManager: ReturnType<typeof useComets>
+let influenceVis: ReturnType<typeof useInfluenceVisualization>
+
+let postsVisible = true
+let influencersVisible = true
 
 function animate() {
   animationId = requestAnimationFrame(animate)
@@ -26,14 +35,19 @@ function animate() {
   threeScene.updateShaders(time)
   threeScene.updateCamera()
 
-  planetsManager.updatePlanets(time)
-  planetsManager.updateConnections()
-  cometsManager.updateComets()
+  if (postsVisible) {
+    planetsManager.updatePlanets(time)
+    planetsManager.updateConnections()
+    cometsManager.updateComets()
+  }
+
+  if (influencersVisible && influenceVis) {
+    influenceVis.animateOrbits(time)
+  }
 
   threeScene.render()
 }
 
-// Get color index for sound pitch based on post type
 function getColorIndex(data: PostData, type: string): number {
   if (type === 'project_hashtag') return 9
   if ((data.favourites && data.favourites > 5) || (data.reblogs && data.reblogs > 2)) return 5
@@ -48,7 +62,7 @@ function getColorIndex(data: PostData, type: string): number {
 }
 
 function connectToStream() {
-  const baseUrl = import.meta.env.DEV ? 'http://localhost:3000' : ''
+  const baseUrl = import.meta.env.VITE_SSE_URL || ''
 
   eventSource = new EventSource(`${baseUrl}/events`)
 
@@ -62,11 +76,9 @@ function connectToStream() {
 
         planetsManager.createPlanet(contentLength, data.type, postData)
 
-        // Play planet spawn sound
         const colorIndex = getColorIndex(postData, data.type)
         sounds.playPlanetSpawn(colorIndex)
 
-        // Play connection sound if it's a reply
         if (postData.inReplyTo) {
           sounds.playConnection()
         }
@@ -87,7 +99,6 @@ function connectToStream() {
 }
 
 async function toggleFullscreen() {
-  // Initialize audio on user interaction
   sounds.initAudio()
 
   if (!document.fullscreenElement) {
@@ -111,6 +122,24 @@ function toggleSound() {
   sounds.toggle()
 }
 
+function setVisualizationMode(mode: VisualizationMode) {
+  visualizationMode.value = mode
+
+  postsVisible = mode === 'posts' || mode === 'both'
+  influencersVisible = mode === 'influencers' || mode === 'both'
+
+  if (planetsManager) {
+    planetsManager.setVisible(postsVisible)
+  }
+  if (cometsManager) {
+    cometsManager.setVisible(postsVisible)
+  }
+
+  if (influenceVis) {
+    influenceVis.setVisible(influencersVisible)
+  }
+}
+
 function onFullscreenChange() {
   isFullscreen.value = !!document.fullscreenElement
 }
@@ -121,6 +150,19 @@ onMounted(() => {
 
   planetsManager = usePlanets(threeScene.getScene)
   cometsManager = useComets(threeScene.getScene, threeScene.setFlashIntensity)
+  influenceVis = useInfluenceVisualization(threeScene.getScene())
+
+  watch(influencers, (newInfluencers) => {
+    if (newInfluencers.length > 0 && influenceVis) {
+      influenceVis.updateInfluencers(newInfluencers)
+    }
+  }, { immediate: true })
+
+  fetchInfluencers(15)
+
+  influenceInterval = setInterval(() => {
+    fetchInfluencers(15)
+  }, 30000)
 
   animate()
   connectToStream()
@@ -138,9 +180,14 @@ onUnmounted(() => {
     eventSource.close()
   }
 
+  if (influenceInterval) {
+    clearInterval(influenceInterval)
+  }
+
   window.removeEventListener('resize', threeScene.onWindowResize)
   document.removeEventListener('fullscreenchange', onFullscreenChange)
 
+  influenceVis?.clearInfluencers()
   planetsManager?.dispose()
   cometsManager?.dispose()
   threeScene.dispose()
@@ -159,8 +206,10 @@ onUnmounted(() => {
     <VisualizationOverlay
       :hidden="isFullscreen"
       :sound-enabled="sounds.enabled.value"
+      :visualization-mode="visualizationMode"
       @toggle-fullscreen="toggleFullscreen"
       @toggle-sound="toggleSound"
+      @set-visualization-mode="setVisualizationMode"
     />
 
     <FullscreenHint

@@ -15,4 +15,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/admin/login': 'http://localhost:3000',
+      '/mentions': 'http://localhost:3000',
+      '/webmention': 'http://localhost:3000',
+      '/events': 'http://localhost:3000',
+      '/health': 'http://localhost:3000',
+      '/test-webmention': 'http://localhost:3000',
+      '/rdf': 'http://localhost:3000',
+      '/sparql': 'http://localhost:3000',
+    }
+  }
 })

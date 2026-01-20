@@ -20,6 +20,7 @@ export function usePlanets(getScene: () => THREE.Scene) {
   const postToPlanet = new Map<string, Planet>()
   const hashtagClusters = new Map<string, HashtagCluster>()
   const connections: Connection[] = []
+  let isVisible = true
 
   function createPlanet(contentLength: number, type: string, data?: PostData) {
     const scene = getScene()
@@ -164,6 +165,9 @@ export function usePlanets(getScene: () => THREE.Scene) {
     glow.position.copy(mesh.position)
     glow.scale.setScalar(0.01)
 
+    mesh.visible = isVisible
+    glow.visible = isVisible
+
     scene.add(mesh)
     scene.add(glow)
 
@@ -211,6 +215,7 @@ export function usePlanets(getScene: () => THREE.Scene) {
     })
 
     const line = new THREE.Line(geometry, material)
+    line.visible = isVisible
     scene.add(line)
 
     connections.push({
@@ -331,6 +336,17 @@ export function usePlanets(getScene: () => THREE.Scene) {
     }
   }
 
+  function setVisible(visible: boolean) {
+    isVisible = visible
+    planets.forEach(planet => {
+      planet.mesh.visible = visible
+      planet.glow.visible = visible
+    })
+    connections.forEach(conn => {
+      conn.line.visible = visible
+    })
+  }
+
   function dispose() {
     const scene = getScene()
     if (!scene) return
@@ -352,6 +368,7 @@ export function usePlanets(getScene: () => THREE.Scene) {
     createPlanet,
     updatePlanets,
     updateConnections,
+    setVisible,
     dispose,
     planets,
     postToPlanet

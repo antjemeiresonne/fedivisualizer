@@ -1,8 +1,9 @@
 import * as THREE from 'three'
-import { type Comet, SPAWN_RADIUS_MAX, easeInOutQuad } from './types'
+import { type Comet, easeInOutQuad } from './types'
 
 export function useComets(getScene: () => THREE.Scene, setFlashIntensity: (value: number) => void) {
   const comets: Comet[] = []
+  let isVisible = true
 
   function createComet() {
     const scene = getScene()
@@ -117,6 +118,13 @@ export function useComets(getScene: () => THREE.Scene, setFlashIntensity: (value
 
     setFlashIntensity(0.5)
 
+    // Apply current visibility state to new comet
+    cometMesh.visible = isVisible
+    glowMesh.visible = isVisible
+    trail.visible = isVisible
+    sparks.visible = isVisible
+    cometLight.visible = isVisible
+
     comets.push({
       mesh: cometMesh,
       trail,
@@ -174,7 +182,6 @@ export function useComets(getScene: () => THREE.Scene, setFlashIntensity: (value
         comet.glow.position.copy(currentPos)
       }
 
-      // Update trail
       const positions = comet.trail.geometry.attributes.position
       if (positions) {
         const trailCount = positions.count
@@ -251,9 +258,21 @@ export function useComets(getScene: () => THREE.Scene, setFlashIntensity: (value
     })
   }
 
+  function setVisible(visible: boolean) {
+    isVisible = visible // Store state for new comets
+    comets.forEach(comet => {
+      comet.mesh.visible = visible
+      comet.trail.visible = visible
+      comet.sparks.visible = visible
+      comet.light.visible = visible
+      if (comet.glow) comet.glow.visible = visible
+    })
+  }
+
   return {
     createComet,
     updateComets,
+    setVisible,
     dispose
   }
 }

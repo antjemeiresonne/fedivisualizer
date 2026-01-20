@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import profilePicture from '@/assets/images/foto.jpg'
 
 const route = useRoute()
 
@@ -17,7 +18,7 @@ const isHome = computed(() => route.path === '/')
 
       <router-link to="/profile" class="profile-link">
         <span>Antje Meiresonne</span>
-        <div class="profile-avatar">AM</div>
+        <img :src="profilePicture" alt="Antje Meiresonne" class="profile-avatar" />
       </router-link>
     </nav>
   </header>
@@ -90,13 +91,8 @@ nav {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4d7cc7, #7ba3e0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #fff;
+  object-fit: cover;
+  border: 2px solid rgba(123, 163, 224, 0.5);
 }
 
 @media (max-width: 768px) {

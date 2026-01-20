@@ -23,6 +23,11 @@ const router = createRouter({
       path: '/visualization',
       name: 'visualization',
       component: () => import('@/views/VisualizationView.vue')
+    },
+    {
+      path: '/admin/webmentions',
+      name: 'admin-webmentions',
+      component: () => import('@/views/AdminWebmentionsView.vue')
     }
   ],
   scrollBehavior() {

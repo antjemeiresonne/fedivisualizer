@@ -3,14 +3,18 @@ import VisualizationLegend from '@/components/molecules/VisualizationLegend.vue'
 import FullscreenButton from '@/components/atoms/FullscreenButton.vue'
 import SoundToggle from '@/components/atoms/SoundToggle.vue'
 
+export type VisualizationMode = 'posts' | 'influencers' | 'both'
+
 defineProps<{
   hidden: boolean
   soundEnabled: boolean
+  visualizationMode: VisualizationMode
 }>()
 
 defineEmits<{
   toggleFullscreen: []
   toggleSound: []
+  setVisualizationMode: [mode: VisualizationMode]
 }>()
 </script>
 
@@ -20,6 +24,32 @@ defineEmits<{
       <h2>Fediverse Live</h2>
       <p>Real-time visualization of decentralized social activity</p>
       <p class="drag-hint">🖱️ Drag to look around</p>
+
+      <div class="mode-toggle">
+        <h4>🎨 Visualization Mode</h4>
+        <div class="toggle-buttons">
+          <button
+            :class="{ active: visualizationMode === 'posts' }"
+            @click="$emit('setVisualizationMode', 'posts')"
+          >
+            Posts
+          </button>
+          <button
+            :class="{ active: visualizationMode === 'influencers' }"
+            @click="$emit('setVisualizationMode', 'influencers')"
+          >
+            Influencers
+          </button>
+          <button
+            :class="{ active: visualizationMode === 'both' }"
+            @click="$emit('setVisualizationMode', 'both')"
+          >
+            Both
+          </button>
+        </div>
+      </div>
+
+
       <VisualizationLegend />
     </div>
 
@@ -80,6 +110,49 @@ defineEmits<{
   color: rgba(255, 255, 255, 0.5);
   font-style: italic;
 }
+
+.mode-toggle {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.mode-toggle h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-buttons button {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-buttons button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.toggle-buttons button.active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #fff;
+}
+
 
 .controls {
   position: absolute;

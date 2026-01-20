@@ -244,7 +244,7 @@ export function useThreeScene(containerRef: Ref<HTMLDivElement | undefined>) {
     const deltaY = event.clientY - previousMousePosition.y
 
     cameraRotation.y += deltaX * 0.005
-    cameraRotation.x += deltaY * 0.005
+    cameraRotation.x -= deltaY * 0.005
     cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x))
 
     previousMousePosition = { x: event.clientX, y: event.clientY }
@@ -278,7 +278,7 @@ export function useThreeScene(containerRef: Ref<HTMLDivElement | undefined>) {
     const deltaY = touch.clientY - previousMousePosition.y
 
     cameraRotation.y += deltaX * 0.005
-    cameraRotation.x += deltaY * 0.005
+    cameraRotation.x -= deltaY * 0.005
     cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x))
 
     previousMousePosition = { x: touch.clientX, y: touch.clientY }

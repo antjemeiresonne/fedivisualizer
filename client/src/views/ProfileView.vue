@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import 'solid-vcard-business-card'
+import WebmentionForm from '@/components/molecules/WebmentionForm.vue'
+import profilePicture from '@/assets/images/foto.jpg'
 </script>
 
 <template>
@@ -7,9 +9,7 @@ import 'solid-vcard-business-card'
     <div class="container">
       <div class="profile-card">
         <div class="avatar-wrapper">
-          <div class="avatar-placeholder">
-            <span>AM</span>
-          </div>
+          <img :src="profilePicture" alt="Antje Meiresonne" class="avatar-image" />
         </div>
 
         <div class="profile-info">
@@ -45,6 +45,8 @@ import 'solid-vcard-business-card'
               <span>Fediverse Audiovisuele Installatie</span>
             </router-link>
           </div>
+
+          <WebmentionForm />
         </div>
       </div>
     </div>
@@ -80,17 +82,12 @@ import 'solid-vcard-business-card'
   margin-bottom: 2rem;
 }
 
-.avatar-placeholder {
+.avatar-image {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4d7cc7, #7ba3e0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  font-weight: 700;
-  color: #fff;
+  object-fit: cover;
+  border: 4px solid rgba(77, 124, 199, 0.5);
   box-shadow: 0 0 40px rgba(77, 124, 199, 0.3);
   animation: pulse 3s ease-in-out infinite;
 }
@@ -197,10 +194,9 @@ h1 {
     font-size: 1.75rem;
   }
 
-  .avatar-placeholder {
+  .avatar-image {
     width: 120px;
     height: 120px;
-    font-size: 2.5rem;
   }
 }
 </style>

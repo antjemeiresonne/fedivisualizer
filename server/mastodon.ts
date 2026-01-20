@@ -1,5 +1,6 @@
 import WebSocket from 'ws'
 import 'dotenv/config'
+import { addPostToStore, addReblogToStore } from './rdf-store.js'
 
 interface ProcessedPost {
     id: string
@@ -110,6 +111,18 @@ function connectMastodon(): void {
                     url: post.url,
                 }
 
+                // Store in RDF graph for SPARQL queries
+                addPostToStore(processedPost)
+
+                // Handle reblogs (creates orbit relationship)
+                if (post.reblog) {
+                    addReblogToStore(
+                        post.account.username,
+                        post.reblog.account.username,
+                        post.reblog.id
+                    )
+                }
+
                 if (broadcastFn) {
                     broadcastFn({
                         type: 'activitypub',
@@ -117,7 +130,6 @@ function connectMastodon(): void {
                     })
                 }
 
-                console.log(`📝 @${processedPost.author}: ${processedPost.content.substring(0, 50)}...`)
             }
         } catch (error) {
             console.error('Error processing Mastodon message:', error)
