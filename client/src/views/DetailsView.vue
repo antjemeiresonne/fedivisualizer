@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import touchDesignerFile from '@/assets/fedivisualiser.12.toe?url'
+
 const techStack = [
   {
     name: 'ActivityPub',
@@ -61,6 +63,27 @@ const influencerColors = [
 <template>
   <div class="details">
     <div class="container">
+      <section class="disclaimer">
+        <div class="disclaimer-icon">⚠️</div>
+        <div class="disclaimer-content">
+          <h3>Oorspronkelijk TouchDesigner Project</h3>
+          <p>
+            Dit project was oorspronkelijk bedoeld als een TouchDesigner installatie.
+            Helaas bleek het renderen onmogelijk door het ontbreken van een GPU in mijn laptop.
+            Om toch mijn doelen te bereiken, heb ik het project herschreven in Three.js -
+            een WebGL library die wel draait zonder dedicated GPU.
+          </p>
+          <p>
+            Het onafgewerkte TouchDesigner project is nog steeds beschikbaar ter referentie:
+          </p>
+          <div class="download-wrapper">
+            <a :href="touchDesignerFile" download="fedivisualiser.12.toe" class="download-btn">
+              <span>Download TouchDesigner Project (.toe)</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <section class="intro">
         <h1>Over het Project</h1>
         <p class="lead">
@@ -355,6 +378,71 @@ p {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
+}
+
+/* Disclaimer section */
+.disclaimer {
+  display: flex;
+  gap: 1.5rem;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.disclaimer-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.disclaimer-content {
+  flex: 1;
+}
+
+.disclaimer-content h3 {
+  color: rgba(255, 193, 7, 0.9);
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+}
+
+.disclaimer-content p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.download-wrapper {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-radius: 8px;
+  color: rgba(255, 193, 7, 0.9);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+  background: rgba(255, 193, 7, 0.3);
+  border-color: rgba(255, 193, 7, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.download-icon {
+  font-size: 1.1rem;
 }
 
 .feature-card {
